@@ -6,9 +6,13 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   SerializeOptions,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
+import { UserNotFoundException } from 'src/users/exceptions/UserNotFound.exception';
+import { HttpExceptionFilter } from 'src/users/filters/HttpException.filter';
 import { UsersService } from 'src/users/services/users/users.service';
 import { GROUP_ALL, GROUP_PASSWORD, SerializedUser } from 'src/users/types';
 
@@ -25,7 +29,7 @@ export class UsersController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ groups: [GROUP_PASSWORD] })
-  @Get('/:username')
+  @Get('/username/:username')
   getByUserName(@Param('username') username: string) {
     const user = this.userService.getUserByUsername(username);
 
@@ -34,5 +38,17 @@ export class UsersController {
     }
 
     return new SerializedUser(user);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseFilters(HttpExceptionFilter)
+  @SerializeOptions({ groups: [GROUP_ALL] })
+  @Get('id/:id')
+  getById(@Param('id', ParseIntPipe) id: number) {
+    const user = this.userService.getUserById(id);
+    if (user) {
+      return new SerializedUser(user);
+    }
+    throw new UserNotFoundException('Custom message', HttpStatus.CONFLICT);
   }
 }

@@ -1,6 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 
 export interface User {
+  id: number;
   username: string;
   password: string;
 }
@@ -10,6 +11,9 @@ export const GROUP_PASSWORD = 'group_password';
 export const GROUP_ALL = 'group_all';
 
 export class SerializedUser {
+  @Expose({ groups: [GROUP_ALL] })
+  id: number;
+
   @Expose({ groups: [GROUP_ALL, GROUP_USERNAME] })
   username: string;
 
