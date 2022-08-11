@@ -1,0 +1,34 @@
+services:
+  nest:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    networks:
+      - nest-net
+  mysql:
+    image: mysql:8
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    volumes:
+      - nest-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testing-nest
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin12345
+    networks:
+      - nest-net
+networks:
+  nest-net:
+    attachable: true
+    driver: overlay
+
+volumes:
+  nest-data:

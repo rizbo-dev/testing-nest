@@ -9,7 +9,7 @@ export class ValidateCustomerMiddleware implements NestMiddleware {
     if (!authorization) {
       return res
         .status(HttpStatus.FORBIDDEN)
-        .send({ error: 'No authorization headers' });
+        .send({ error: 'No authorization headerssss' });
     }
     next();
   }
